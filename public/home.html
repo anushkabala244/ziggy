@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZIGGY 🍴 - Home</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .hero {
+      background: rgba(255, 64, 129, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 64, 129, 0.3);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      padding: 60px 20px;
+      text-align: center;
+      color: white;
+      margin: 40px 20px;
+      border-radius: 20px;
+    }
+    .hero h1 {
+      font-size: 48px;
+      margin: 20px 0;
+      color: #ff4081;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .hero p {
+      font-size: 18px;
+      margin: 10px 0;
+      color: #ddd;
+    }
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(45deg, #ff4081, #ff6b9c);
+      color: white;
+      padding: 15px 35px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 20px;
+      cursor: pointer;
+      border: none;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 64, 129, 0.5);
+    }
+  </style>
+</head>
+<body>
+    <nav>
+    <div class="logo">ZIGGY 🍴</div>
+    <div class="nav-links" id="navLinks">
+      <a href="home.html">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="cart.html">Cart</a>
+      <a href="checkout.html">Checkout</a>
+      <a href="request.html">Request Food</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <a href="home.html" class="mobile-only">Home</a>
+      <a href="menu.html" class="mobile-only">Menu</a>
+      <a href="cart.html" class="mobile-only">Cart</a>
+      <a href="checkout.html" class="mobile-only">Checkout</a>
+      <a href="request.html" class="mobile-only">Request Food</a>
+      <a href="about.html">About Us</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="#" onclick="signOut()">Sign Out</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1>Welcome to ZIGGY 🍴</h1>
+    <p>Delicious Food, Fast Delivery, Great Prices!</p>
+    <button class="cta-button" onclick="window.location.href='/menu.html'">Order Now</button>
+  </div>
+
+  <section class="home" style="padding: 40px 20px; text-align: center;">
+    <h2>Why Choose ZIGGY?</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+      <div class="card">
+        <h3>🚚 Fast Delivery</h3>
+        <p>Get your food delivered to your doorstep in minutes!</p>
+      </div>
+      <div class="card">
+        <h3>💰 Great Prices</h3>
+        <p>Affordable meals with amazing quality and taste.</p>
+      </div>
+      <div class="card">
+        <h3>🎉 Easy Ordering</h3>
+        <p>Simple, fast, and fun ordering experience for everyone.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("hamburgerMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function signOut() {
+      localStorage.removeItem("ziggyEmail");
+      Swal.fire("Signed Out", "You have been logged out.", "success").then(() => {
+        window.location.href = "/login.html";
+      });
+    }
+  </script>
+</body>
+</html>

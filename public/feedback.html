@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZIGGY 🍴 - Feedback</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <nav>
+    <div class="logo">ZIGGY 🍴</div>
+    <div class="nav-links" id="navLinks">
+      <a href="home.html">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="cart.html">Cart</a>
+      <a href="checkout.html">Checkout</a>
+      <a href="request.html">Request Food</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <a href="home.html" class="mobile-only">Home</a>
+      <a href="menu.html" class="mobile-only">Menu</a>
+      <a href="cart.html" class="mobile-only">Cart</a>
+      <a href="checkout.html" class="mobile-only">Checkout</a>
+      <a href="request.html" class="mobile-only">Request Food</a>
+      <a href="about.html">About Us</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="#" onclick="signOut()">Sign Out</a>
+    </div>
+  </nav>
+
+  <section class="request-section">
+    <div class="glass-form">
+      <h2>Feedback Form 📝</h2>
+      <form id="feedbackForm">
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" placeholder="Enter your name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Your Feedback:</label>
+          <textarea id="message" rows="4" placeholder="How was your experience?" required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Feedback</button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("hamburgerMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+    function signOut() {
+      localStorage.removeItem("ziggyEmail");
+      Swal.fire("Signed Out", "You have been logged out.", "success").then(() => {
+        window.location.href = "/login.html";
+      });
+    }
+
+    document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const message = document.getElementById("message").value;
+
+      try {
+        const res = await fetch('/submit-feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, message })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Thank You!",
+            text: data.message,
+            confirmButtonColor: "#ff4081"
+          }).then(() => {
+            window.location.href = "/menu.html";
+          });
+        } else {
+          Swal.fire("Error", data.message, "error");
+        }
+      } catch (err) {
+        Swal.fire("Error", "Failed to submit feedback", "error");
+      }
+    });
+  </script>
+</body>
+</html>

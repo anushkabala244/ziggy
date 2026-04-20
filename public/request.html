@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZIGGY 🍴 - Request Food</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <nav>
+    <div class="logo">ZIGGY 🍴</div>
+    <div class="nav-links" id="navLinks">
+      <a href="home.html">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="cart.html">Cart</a>
+      <a href="checkout.html">Checkout</a>
+      <a href="request.html">Request Food</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <a href="home.html" class="mobile-only">Home</a>
+      <a href="menu.html" class="mobile-only">Menu</a>
+      <a href="cart.html" class="mobile-only">Cart</a>
+      <a href="checkout.html" class="mobile-only">Checkout</a>
+      <a href="request.html" class="mobile-only">Request Food</a>
+      <a href="about.html">About Us</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="#" onclick="signOut()">Sign Out</a>
+    </div>
+  </nav>
+
+  <section class="request-section">
+    <div class="glass-form">
+      <h2>Request a Special Dish</h2>
+      <form id="requestForm">
+        <div class="form-group">
+          <label for="dish">Dish Name:</label>
+          <input type="text" id="dish" name="dish" placeholder="What are you craving?" required>
+        </div>
+
+        <div class="form-group">
+          <label for="details">Details & Preferences:</label>
+          <textarea id="details" name="details" rows="4" placeholder="Any specific ingredients or preparation instructions?" required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Request</button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("hamburgerMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function signOut() {
+      localStorage.removeItem("ziggyEmail");
+      Swal.fire("Signed Out", "You have been logged out.", "success").then(() => {
+        window.location.href = "/login.html";
+      });
+    }
+
+    document.getElementById("requestForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = localStorage.getItem("ziggyEmail");
+      if (!email) return Swal.fire("Error", "Please login first", "error");
+
+      const dish = document.getElementById("dish").value;
+      const details = document.getElementById("details").value;
+
+      const res = await fetch('/request-food', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, dish, details })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        Swal.fire("Success", data.message, "success").then(() => {
+          window.location.href = data.next;
+        });
+      } else {
+        Swal.fire("Error", data.message, "error");
+      }
+    });
+  </script>
+</body>
+</html>

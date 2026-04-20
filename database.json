@@ -1,0 +1,82 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "demo@ziggy.com",
+      "password": "password123",
+      "createdAt": "2026-04-20T00:00:00Z",
+      "cart": [
+        {
+          "dish": "Margherita Pizza",
+          "quantity": 2,
+          "price": 250
+        }
+      ],
+      "orders": [
+        {
+          "orderId": "ORD001",
+          "items": [
+            {
+              "dish": "Butter Chicken",
+              "quantity": 1,
+              "price": 280
+            }
+          ],
+          "totalAmount": 280,
+          "deliveryAddress": "123 Main Street",
+          "paymentMethod": "card",
+          "status": "delivered",
+          "orderDate": "2026-04-19T10:30:00Z",
+          "deliveryDate": "2026-04-19T12:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "email": "user@example.com",
+      "password": "pass456",
+      "createdAt": "2026-04-20T01:00:00Z",
+      "cart": [],
+      "orders": []
+    }
+  ],
+  "orders": [
+    {
+      "orderId": "ORD001",
+      "userId": 1,
+      "email": "demo@ziggy.com",
+      "items": [
+        {
+          "dish": "Butter Chicken",
+          "quantity": 1,
+          "price": 280
+        }
+      ],
+      "totalAmount": 280,
+      "deliveryAddress": "123 Main Street",
+      "paymentMethod": "card",
+      "status": "delivered",
+      "orderDate": "2026-04-19T10:30:00Z",
+      "deliveryDate": "2026-04-19T12:00:00Z"
+    }
+  ],
+  "feedback": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "message": "Great service and delicious food!",
+      "createdAt": "2026-04-20T08:00:00Z"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "email": "demo@ziggy.com",
+      "dish": "Custom Biryani",
+      "details": "Extra spicy with premium meat",
+      "status": "pending",
+      "createdAt": "2026-04-20T09:00:00Z"
+    }
+  ]
+}

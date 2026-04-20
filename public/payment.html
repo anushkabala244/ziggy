@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZIGGY 🍴 - Payment</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <nav>
+    <div class="logo">ZIGGY 🍴</div>
+    <div class="nav-links" id="navLinks">
+      <a href="home.html">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="cart.html">Cart</a>
+      <a href="checkout.html">Checkout</a>
+      <a href="request.html">Request Food</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <a href="home.html" class="mobile-only">Home</a>
+      <a href="menu.html" class="mobile-only">Menu</a>
+      <a href="cart.html" class="mobile-only">Cart</a>
+      <a href="checkout.html" class="mobile-only">Checkout</a>
+      <a href="request.html" class="mobile-only">Request Food</a>
+      <a href="about.html">About Us</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="#" onclick="signOut()">Sign Out</a>
+    </div>
+  </nav>
+
+  <section class="request-section">
+    <div class="glass-form">
+      <h2>Payment Confirmation 🎉</h2>
+      <div style="background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+        <p style="font-size: 18px; color: #4CAF50; margin: 0; font-weight: bold;">Your payment has been processed successfully.</p>
+      </div>
+      <p style="font-size: 16px; color: #ccc; margin-bottom: 25px;">Thank you for ordering with <strong style="color: #ff4081;">ZIGGY 🍴</strong>! Your food will be delivered soon.</p>
+      <button onclick="goHome()" class="submit-btn">Back to Menu</button>
+    </div>
+  </section>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("hamburgerMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function signOut() {
+      localStorage.removeItem("ziggyEmail");
+      if(typeof Swal !== 'undefined') {
+        Swal.fire("Signed Out", "You have been logged out.", "success").then(() => {
+          window.location.href = "/login.html";
+        });
+      } else {
+        alert("You have been logged out.");
+        window.location.href = "/login.html";
+      }
+    }
+
+    function goHome() {
+      // Manual trigger if they click the Back to Menu button
+      window.location.href = "/menu.html";
+    }
+
+    // After 2 seconds, ask for feedback
+    setTimeout(() => {
+      Swal.fire({
+        title: "How did we do?",
+        text: "Would you like to share your feedback with us?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#ff4081",
+        cancelButtonColor: "#333",
+        confirmButtonText: "Yes, sure!",
+        cancelButtonText: "No, back to Menu"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/feedback.html";
+        } else {
+          window.location.href = "/menu.html";
+        }
+      });
+    }, 2000);
+  </script>
+</body>
+</html>

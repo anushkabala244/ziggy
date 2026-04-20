@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZIGGY 🍴 - Menu</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <!-- Navigation -->
+    <nav>
+    <div class="logo">ZIGGY 🍴</div>
+    <div class="nav-links" id="navLinks">
+      <a href="home.html">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="cart.html">Cart</a>
+      <a href="checkout.html">Checkout</a>
+      <a href="request.html">Request Food</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <a href="home.html" class="mobile-only">Home</a>
+      <a href="menu.html" class="mobile-only">Menu</a>
+      <a href="cart.html" class="mobile-only">Cart</a>
+      <a href="checkout.html" class="mobile-only">Checkout</a>
+      <a href="request.html" class="mobile-only">Request Food</a>
+      <a href="about.html">About Us</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="#" onclick="signOut()">Sign Out</a>
+    </div>
+  </nav>
+
+  <!-- Menu Section -->
+  <section class="menu">
+    <h2>Our Menu</h2>
+    <div class="menu-grid" id="menuGrid">Loading...</div>
+  </section>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("hamburgerMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function signOut() {
+      localStorage.removeItem("ziggyEmail");
+      Swal.fire("Signed Out", "You have been logged out.", "success").then(() => {
+        window.location.href = "/login.html";
+      });
+    }
+
+    async function loadMenu() {
+      try {
+        const res = await fetch('/menu-items');
+        const data = await res.json();
+
+        if (data.success) {
+          const grid = document.getElementById("menuGrid");
+          grid.innerHTML = "";
+          data.items.forEach(item => {
+            grid.innerHTML += `
+              <div class="card">
+                <img src="${item.image}" alt="${item.dish}">
+                <h3>${item.dish}</h3>
+                <p>₹${item.price}</p>
+                <button onclick="addToCart('${item.dish}',1)">Add to Cart</button>
+              </div>
+            `;
+          });
+        } else {
+          document.getElementById("menuGrid").innerHTML = "<p>Error loading menu items</p>";
+        }
+      } catch (err) {
+        document.getElementById("menuGrid").innerHTML = "<p>Error loading menu items</p>";
+      }
+    }
+
+    async function addToCart(dish, quantity) {
+      const email = localStorage.getItem("ziggyEmail");
+      if (!email) {
+        if (typeof Swal !== 'undefined') {
+          return Swal.fire("Error", "Please login first", "error");
+        } else {
+          alert("Please login first");
+          return;
+        }
+      }
+
+      const res = await fetch('/add-to-cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, dish, quantity })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            title: "Added!",
+            text: data.message,
+            icon: "success",
+            showCancelButton: true,
+            confirmButtonText: "Go to Cart",
+            cancelButtonText: "Add More",
+            confirmButtonColor: "#ff4081"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "/cart.html";
+            }
+          });
+        } else {
+          window.location.href = "/cart.html";
+        }
+      } else {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire("Error", data.message, "error");
+        } else {
+          alert("Error: " + data.message);
+        }
+      }
+    }
+
+    loadMenu();
+  </script>
+</body>
+</html>

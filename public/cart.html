@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZIGGY 🍴 - Cart</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .cart-items-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 25px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px 20px;
+      border-radius: 12px;
+      color: #fff;
+    }
+    .cart-item h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #ff4081;
+    }
+    .cart-item p {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+    <nav>
+    <div class="logo">ZIGGY 🍴</div>
+    <div class="nav-links" id="navLinks">
+      <a href="home.html">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="cart.html">Cart</a>
+      <a href="checkout.html">Checkout</a>
+      <a href="request.html">Request Food</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <a href="home.html" class="mobile-only">Home</a>
+      <a href="menu.html" class="mobile-only">Menu</a>
+      <a href="cart.html" class="mobile-only">Cart</a>
+      <a href="checkout.html" class="mobile-only">Checkout</a>
+      <a href="request.html" class="mobile-only">Request Food</a>
+      <a href="about.html">About Us</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="#" onclick="signOut()">Sign Out</a>
+    </div>
+  </nav>
+
+  <!-- Cart Section -->
+  <section class="request-section">
+    <div class="glass-form">
+      <h2>Your Cart</h2>
+      <div id="cartItems" class="cart-items-container"></div>
+      <button onclick="proceedToCheckout()" class="submit-btn">Proceed to Checkout</button>
+    </div>
+  </section>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("hamburgerMenu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function signOut() {
+      localStorage.removeItem("ziggyEmail");
+      Swal.fire("Signed Out", "You have been logged out.", "success").then(() => {
+        window.location.href = "/login.html";
+      });
+    }
+
+    async function loadCart() {
+      const email = localStorage.getItem("ziggyEmail");
+      if (!email) {
+        return Swal.fire("Error", "Please login first", "error").then(() => {
+          window.location.href = "/login.html";
+        });
+      }
+
+      const res = await fetch(`/cart-items?email=${encodeURIComponent(email)}`);
+      const data = await res.json();
+
+      const cartDiv = document.getElementById("cartItems");
+      cartDiv.innerHTML = "";
+
+      if (data.success && data.cart && data.cart.length > 0) {
+        data.cart.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "cart-item";
+          div.innerHTML = `<h3>${item.dish}</h3><p>Qty: ${item.quantity}</p>`;
+          cartDiv.appendChild(div);
+        });
+      } else {
+        cartDiv.innerHTML = "<p style='color: #ccc; font-size: 16px; margin: 20px 0;'>Your cart is completely empty.</p>";
+      }
+    }
+
+    function proceedToCheckout() {
+      const email = localStorage.getItem("ziggyEmail");
+      if (!email) {
+        return Swal.fire("Error", "Please login first", "error");
+      }
+      
+      const cartDiv = document.getElementById("cartItems");
+      if (cartDiv.innerHTML.includes("completely empty")) {
+        return Swal.fire("Oops!", "Your cart is empty. Add some food first!", "warning").then(() => {
+          window.location.href = "/menu.html";
+        });
+      }
+
+      // Redirect to checkout page to capture address and payment details
+      window.location.href = "/checkout.html";
+    }
+
+    // Load cart items on page load
+    loadCart();
+  </script>
+</body>
+</html>

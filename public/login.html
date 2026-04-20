@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ZIGGY Login</title>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+/* Your CSS stays exactly the same */
+* { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
+body { height:100vh; display:flex; justify-content:center; align-items:center;
+  background:radial-gradient(circle at top,#1a1a1a,#050505); overflow:hidden; color:white; }
+body::before { content:""; position:absolute; width:600px; height:600px;
+  background:radial-gradient(circle,rgba(255,64,129,0.25),transparent); filter:blur(120px);
+  top:30%; left:50%; transform:translate(-50%,-50%); }
+.floating-food { position:absolute; width:100%; height:100%; z-index:0; }
+.floating-food span { position:absolute; animation:float linear infinite; }
+.floating-food span:nth-child(1){ left:5%; font-size:25px; opacity:0.3; animation-duration:18s;}
+.floating-food span:nth-child(2){ left:20%; font-size:40px; opacity:0.6; animation-duration:12s;}
+.floating-food span:nth-child(3){ left:40%; font-size:30px; opacity:0.4; animation-duration:15s;}
+.floating-food span:nth-child(4){ left:60%; font-size:45px; opacity:0.7; animation-duration:11s;}
+.floating-food span:nth-child(5){ left:80%; font-size:28px; opacity:0.3; animation-duration:17s;}
+.floating-food span:nth-child(6){ left:95%; font-size:35px; opacity:0.5; animation-duration:14s;}
+@keyframes float { 0%{transform:translateY(100vh) translateX(0px) rotate(0deg);}
+  50%{transform:translateY(50vh) translateX(20px) rotate(180deg);}
+  100%{transform:translateY(-120vh) translateX(-20px) rotate(360deg);} }
+.login-box { position:relative; z-index:2; width:360px; padding:30px; border-radius:20px; text-align:center;
+  backdrop-filter:blur(25px); background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15); box-shadow:0 0 40px rgba(0,0,0,0.7); }
+h2 { margin-bottom:20px; }
+.input-group { margin:12px 0; }
+input { width:100%; padding:12px; border-radius:10px; border:none;
+  background:rgba(255,255,255,0.1); color:white; outline:none; }
+button { width:100%; padding:12px; margin-top:12px; border:none; border-radius:10px;
+  background:linear-gradient(45deg,#ff4081,#ff6b9c); color:white; cursor:pointer; transition:0.3s; }
+button:hover { transform:scale(1.05); box-shadow:0 0 20px rgba(255,64,129,0.6); }
+.alt-btn { background:rgba(255,255,255,0.1); }
+p { margin-top:10px; font-size:13px; color:#ccc; }
+a { color:#ff4081; cursor:pointer; }
+</style>
+</head>
+
+<body>
+<div class="floating-food">
+  <span>🍕</span><span>🍔</span><span>🍟</span><span>🍩</span><span>🌮</span><span>🥤</span>
+</div>
+
+<div class="login-box">
+  <h2>Welcome to ZIGGY 🍴</h2>
+
+  <div class="input-group">
+    <input type="email" id="email" placeholder="Email">
+  </div>
+  <div class="input-group">
+    <input type="password" id="password" placeholder="Password">
+  </div>
+
+  <button onclick="login()">Login</button>
+  <button class="alt-btn" onclick="googleLogin()">Login with Google</button>
+  <button class="alt-btn" onclick="phoneLogin()">Login with Phone</button>
+
+  <p><a onclick="signup()">Create Account</a></p>
+  <p><a onclick="resetPassword()">Forgot Password?</a></p>
+</div>
+
+<script>
+// LOGIN
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+
+  if (!data.success) {
+    Swal.fire("Oops!", data.message || "Invalid login", "error");
+  } else {
+    // ✅ Save email in localStorage
+    localStorage.setItem("ziggyEmail", email);
+
+    Swal.fire("Welcome!", data.message, "success").then(() => {
+      window.location.href = data.next || "/menu.html";
+    });
+  }
+}
+
+// SIGNUP
+async function signup() {
+  const { value: formValues } = await Swal.fire({
+    title: 'Create Account',
+    html:
+      '<input id="swal-email" class="swal2-input" placeholder="Email">' +
+      '<input id="swal-pass" type="password" class="swal2-input" placeholder="Password">',
+    focusConfirm: false,
+    preConfirm: () => {
+      return {
+        email: document.getElementById('swal-email').value,
+        password: document.getElementById('swal-pass').value
+      }
+    }
+  });
+
+  if (!formValues) return;
+
+  const res = await fetch("/signup", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(formValues)
+  });
+  const data = await res.json();
+
+  if (data.success) {
+    // ✅ Save email in localStorage
+    localStorage.setItem("ziggyEmail", formValues.email);
+
+    Swal.fire("Success!", data.message, "success").then(() => {
+      window.location.href = data.next || "/menu.html";
+    });
+  } else {
+    Swal.fire("Error", data.message, "error");
+  }
+}
+
+// RESET PASSWORD
+async function resetPassword() {
+  const { value: formValues } = await Swal.fire({
+    title: 'Reset Password',
+    html:
+      '<input id="swal-email" class="swal2-input" placeholder="Email">' +
+      '<input id="swal-pass" type="password" class="swal2-input" placeholder="New Password">',
+    focusConfirm: false,
+    preConfirm: () => {
+      return {
+        email: document.getElementById('swal-email').value,
+        newPassword: document.getElementById('swal-pass').value
+      }
+    }
+  });
+
+  if (!formValues) return;
+
+  const res = await fetch("/reset-password", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(formValues)
+  });
+  const data = await res.json();
+
+  Swal.fire(data.success ? "Updated!" : "Error", data.message, data.success ? "success" : "error");
+}
+
+// GOOGLE LOGIN (dummy)
+async function googleLogin() {
+  Swal.fire("Info", "Google login not yet implemented", "info");
+}
+
+// PHONE LOGIN (dummy)
+async function phoneLogin() {
+  const { value: phone } = await Swal.fire({
+    title: 'Phone Login',
+    input: 'text',
+    inputLabel: 'Enter phone number',
+    inputPlaceholder: 'Phone number'
+  });
+
+  if (!phone) return;
+
+  const res = await fetch("/phone-login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ phone })
+  });
+  const data = await res.json();
+
+  const { value: otp } = await Swal.fire({
+    title: 'Enter OTP',
+    input: 'text',
+    inputPlaceholder: '1234'
+  });
+
+  if (otp === data.otp) {
+    // ✅ Save dummy phone login email
+    localStorage.setItem("ziggyEmail", "phoneuser@ziggy.com");
+
+    Swal.fire("Success!", "Phone login successful", "success").then(() => {
+      window.location.href = "/menu.html";
+    });
+  } else {
+    Swal.fire("Error", "Wrong OTP", "error");
+  }
+}
+</script>
+</body>
+</html>
