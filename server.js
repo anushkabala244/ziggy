@@ -160,7 +160,9 @@ app.post('/submit-feedback', async (req, res) => {
 });
 
 // ------------------ Server & DB ------------------
-mongoose.connect('mongodb://localhost:27017/ziggy')
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ziggy';
+
+mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('MongoDB connected');
     const PORT = process.env.PORT || 5000;
